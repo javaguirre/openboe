@@ -1,0 +1,17 @@
+{% extends "layout.twig" %}
+{% block content %}
+    <p>Busca sobre lo que te interesa en el BOE</p>
+    <form method="post">
+        <input type="text" name="q">
+        <input type="submit" value="Search">
+    </form>
+    <ul>
+    {% if query %}
+        <p>Resultados para {{ query }}</p>
+    {% endif %}
+    {% for link in links %}
+        <li><a href="{{ link['url'] }}">{{ link['title'] }}</a> - {{ link['description'] }}
+            <a href="{{ link['guid'] }}">[PDF]</a></li><br />
+    {% endfor %}
+    </ul>
+{% endblock %}
