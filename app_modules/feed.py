@@ -1,6 +1,6 @@
 import feedparser
 
-def parse(url):
+def parse(url, filter_by = ""):
     feed = feedparser.parse(url)
     feed_list = []
     #TODO Add in template uls, format date, load image item['summary']

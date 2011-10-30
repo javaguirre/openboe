@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, abort, redirect, url_for
 from app_modules.feed import parse
 app = Flask(__name__)
 
@@ -6,7 +6,7 @@ app = Flask(__name__)
 def index():
     return "Hello World!"
     
-@app.route("/feed/<name>")
+@app.route("/feed/<name>", methods=['GET', 'POST'])
 def feed(name):
     feeds = ["seccionI", "seccionII", "seccionIII", "seccionIV"]
     topics = {
@@ -20,8 +20,14 @@ def feed(name):
               "colaboracion": "http://www.boe.es/rss/canal.php?c=ccolaboracion",
               "premios": "http://www.boe.es/rss/canal.php?c=premios"
               }
+    filter_by = ""
+    
+    if request.method == 'POST':
+        #TODO check POST['q']
+        filter_by = request.form['q']
+
     if topics.has_key(name):
-        links = parse(topics[name])
+        links = parse(topics[name], filter_by)
     else:
         response = "nothing"
         
