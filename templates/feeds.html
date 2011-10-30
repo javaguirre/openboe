@@ -1,9 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
     <p>Busca sobre lo que te interesa en el BOE</p>
+    <script>
+        $(function() {
+            $("input[name='from']").datepicker();
+            $("input[name='to']").datepicker();
+            $("input[type='submit']").click(function() {
+                $(this).attr("value", "Buscando...").attr("disabled", "").parent().submit();
+                            });
+        });
+    </script>
     <form method="post">
         <input type="text" name="q">
-        <input type="submit" value="Search">
+        <input type="text" name="from">
+        <input type="text" name="to">
+        <input type="submit" value="Buscar">
     </form>
     <ul>
     {% if query %}
