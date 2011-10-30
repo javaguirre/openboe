@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, abort, redirect, url_for
 from app_modules.feed import parse
 app = Flask(__name__)
@@ -29,9 +30,9 @@ def feed(name):
     if topics.has_key(name):
         links = parse(topics[name], filter_by)
     else:
-        response = "nothing"
+        abort(404)
         
-    return render_template("feeds.html", links=links)
+    return render_template("feeds.html", links=links, query=filter_by)
 
 if __name__ == "__main__":
     app.debug = True
