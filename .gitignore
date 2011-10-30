@@ -1,1 +1,5 @@
-vendor/twig/
+.DS_Store
+*~
+*.swp
+*.kdev4
+*.pyc
