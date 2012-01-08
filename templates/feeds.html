@@ -16,13 +16,24 @@
         <p><label>Hasta:</label><input type="text" name="to"></p>
         <input type="submit" value="Buscar">
     </form>
-    <ul>
-    {% if query %}
-        <p>Resultados para {{ query }}</p>
-    {% endif %}
-    {% for link in links %}
-        <li><a href="{{ link.link }}" target="blank">{{ link.title }}</a> - {{ link.description }}
-            <a href="{{ link.guid }}">[PDF]</a></li><br />
-    {% endfor %}
-    </ul>
+    <div id="content">
+        <ul>
+        {% if query %}
+            {% if query.q %}
+                <p>Resultados para {{ query.q }}
+                    {% if query.from_date %}
+                        desde {{ query.from_date }} hasta {{ query.to_date }}
+                    {% endif %}
+                </p>
+            {% elif query.from_date %}
+                <p>Resultados desde {{ query.from_date }} hasta {{ query.to_date }}</p>
+            {% endif %}
+        {% endif %}
+        {% for link in links %}
+            <li class=>
+                <strong>{{ link.description }}</strong>: <a href="{{ link.link }}" target="blank">{{ link.title }}</a> - <a href="{{ link.guid }}">[PDF]</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
