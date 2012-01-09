@@ -3,11 +3,20 @@ import feedparser
 from datetime import datetime
 
 
+def replace_all(text, dic):
+    text_formatted = text
+    for i, j in dic.iteritems():
+        text_formatted = text_formatted.replace(i, j)
+    return text_formatted
+
+
 def parse(url, filter_by={}):
 
     feed = feedparser.parse(url)
     feed_list = []
     filter_text = ""
+    reps = {u"á": u"a", u"í": u"i", u"ó": u"o", u"é": u"e", u"ú": u"u"}
+
     #TODO Add in template uls, format date, load image item['summary']
     try:
         filter_text = filter_by['q']
@@ -30,7 +39,10 @@ def parse(url, filter_by={}):
         filter_to = ""
 
     for item in feed['items']:
-        if filter_text in item['title'].lower() or filter_text in item['description'].lower():
+        item_title = replace_all(item['title'].lower(), reps)
+        item_desc = item['description'].lower()
+
+        if filter_text in item_title or filter_text in item_desc:
             item_date = item['description'].split(" - ")[1].replace("Publicado el", "").strip()
             item_date = datetime.strptime(item_date, "%d/%m/%Y")
 
