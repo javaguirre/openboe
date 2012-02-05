@@ -70,7 +70,7 @@ def treat_request(type_feed, request, name):
 
 @app.route("/")
 def index():
-    return render_template("index.html", topics=topics)
+    return render_template("index.html", topics=topics, boes=boes, bormes=bormes)
 
 
 @app.route("/feed/<name>", methods=['GET', 'POST'])
