@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, abort, redirect, url_for
 from app_modules.feed import parse
+import os
 app = Flask(__name__)
 
 RSS_URL = "http://www.boe.es/rss/"
@@ -99,4 +100,5 @@ def boe(name):
 
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    port = int(os.environ.get('PORT', 45412))
+    app.run(host='0.0.0.0', port=port)
