@@ -1,48 +1,9 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, abort, redirect, url_for
-from app_modules.feed import parse
 import os
 app = Flask(__name__)
 
-RSS_URL = "http://www.boe.es/rss/"
-
-topics = {
-          "url": "canal.php",
-          "becas": "?c=becas",
-          "ayudas": "?c=ayudas",
-          "estudio": "?c=planes",
-          "convenios": "?c=ccolectivos",
-          "divisas": "?c=cambios",
-          "prestamos": "?c=prestamos",
-          "servicios": "?c=cartas",
-          "colaboracion": "?c=ccolaboracion",
-          "premios": "?c=premios"
-          }
-
-boes = {
-          "url": "boe.php",
-          "sumario": "",
-          "seccionI": "?s=1",
-          "seccionII": "?s=2",
-          "seccionIIA": "?s=2A",
-          "seccionIIB": "?s=SB",
-          "seccionIII": "?s=3",
-          "seccionIV": "?s=4",
-          "seccionV": "?s=5",
-          "seccionVA": "?s=5A",
-          "seccionVB": "?s=5B",
-          "seccionVC": "?s=5C",
-          "suplemento": "?s=T"
-        }
-
-bormes = {
-          "url": "borme.php",
-          "sumario": "",
-          "seccionI": "?s=1",
-          "seccionIA": "?s=A",
-          "seccionIB": "?s=B",
-          "seccionII": "?s=C"
-        }
+from db import Db
 
 
 #FIXME move it to somewhere

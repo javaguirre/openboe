@@ -33,6 +33,7 @@ for feed, title in zip(feeds, titles):
                                     {"title": title.text_content(), "timestamp": time()})
     else:
         section_obj = section_obj[0]
+        #TODO update timestamp
 
     for elem in feed.iterlinks():
         if not db_obj.has('feed', {"url": elem[2]}):
