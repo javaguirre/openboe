@@ -30,19 +30,23 @@ def feed(section_slug, feed_slug):
     if request.method == 'POST':
         if not re.match("[\s?\w\s?]+", request.form['q']):
             abort(404)
+        else:
+            filter_by['q'] = request.form['q']
         try:
             start = datetime.strptime(request.form['from'], "%m/%d/%Y")
             end = datetime.strptime(request.form['to'], "%m/%d/%Y")
+            filter_by['from_date'] = start
+            filter_by['to_date'] = end
         except ValueError:
-            abort(404)
-
-        filter_by = {"q": request.form['q'],
-                     "from_date": start, "to_date": end}
+            pass
 
     if 'q' in filter_by:
-        links = Db().has('link',
-                         {"title": "/.*" + filter_by['q'] + ".*/i",
-                          "date": {"$gte": filter_by['from_date'], "$lte": filter_by['to_date']}})
+        query = {"title": re.compile(filter_by['q'], re.IGNORECASE)}
+
+        if "start" and "end" in filter_by:
+            query['date'] = {"$gte": filter_by['start'], "$lte": filter_by['to_date']}
+
+        links = Db().has('link', query)
     else:
         links = Db().has('link', {"feed_id": feed['_id']})
 
