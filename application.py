@@ -1,27 +1,11 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request
 import os
+from datetime import datetime
+import re
 app = Flask(__name__)
 
 from db import Db
-
-
-#FIXME move it to somewhere
-def treat_request(type_feed, request, name):
-    filter_by = {}
-
-    if request.method == 'POST':
-        #TODO check POST['q']
-        filter_by = {"q": request.form['q'],
-                     "from_date": request.form['from'], "to_date": request.form['to']}
-
-    if name in "hola":
-        #links = parse(RSS_URL + rss_topics['url'] + rss_topics[name], type_feed, filter_by)
-        pass
-    else:
-        abort(404)
-
-    return filter_by, []
 
 
 @app.route("/")
@@ -34,17 +18,36 @@ def index():
 
 @app.route("/<section_slug>/<feed_slug>", methods=['GET', 'POST'])
 def feed(section_slug, feed_slug):
-    feed = Db().find_one('feed', {"slug": feed_slug})
     sections = Db().get_col('section')
+    feeds = list(Db().get_col('feed'))
+    feed = Db().find_one('feed', {"slug": feed_slug})
 
     if not feed:
         abort(404)
 
-    links = Db().has('link', {"feed_id": feed['_id']})
-    filter_by = ''
+    filter_by = {}
+
+    if request.method == 'POST':
+        if not re.match("[\s?\w\s?]+", request.form['q']):
+            abort(404)
+        try:
+            start = datetime.strptime(request.form['from'], "%m/%d/%Y")
+            end = datetime.strptime(request.form['to'], "%m/%d/%Y")
+        except ValueError:
+            abort(404)
+
+        filter_by = {"q": request.form['q'],
+                     "from_date": start, "to_date": end}
+
+    if 'q' in filter_by:
+        links = Db().has('link',
+                         {"title": "/.*" + filter_by['q'] + ".*/i",
+                          "date": {"$gte": filter_by['from_date'], "$lte": filter_by['to_date']}})
+    else:
+        links = Db().has('link', {"feed_id": feed['_id']})
 
     return render_template("feeds.html",
-                           links=links, query=filter_by, feed_slug=feed_slug, sections=sections)
+                           links=links, query=filter_by, feed_slug=feed_slug, sections=sections, feeds=feeds)
 
 
 if __name__ == "__main__":
