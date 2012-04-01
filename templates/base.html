@@ -22,7 +22,11 @@
                                 <ul class="dropdown-menu">
                                     {% for feed in feeds %}
                                         {% if section['_id'] == feed['section_id'] %}
-                                            <li><a href="">{{ feed['title']|capitalize }}</a></li>
+                                            <li>
+                                                <a href="{{ url_for('feed', section_slug=section['slug'], feed_slug=feed['slug'])}}">
+                                                    {{ feed['title']|capitalize }}
+                                                </a>
+                                            </li>
                                         {% endif %}
                                     {% endfor %}
                                 </ul>

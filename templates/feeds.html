@@ -32,7 +32,7 @@
         {% endif %}
         {% for link in links %}
             <li class=>
-                <strong>{{ link.description }}</strong>: <a href="{{ link.link }}" target="blank">{{ link.title }}</a> - <a href="{{ link.guid }}">[PDF]</a>
+                <strong>{{ link['description'] }}</strong>: <a href="{{ link['link'] }}" target="blank">{{ link['title'] }}</a> - <a href="{{ link['guid'] }}">[PDF]</a>
             </li>
         {% endfor %}
         </ul>

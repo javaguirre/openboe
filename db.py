@@ -12,5 +12,8 @@ class Db(object):
     def has(self, col, query_dict):
         return list(self.db[col].find(query_dict))
 
+    def find_one(self, col, query_dict):
+        return self.db[col].find_one(query_dict)
+
     def insert(self, col, element):
         self.db[col].insert(element)

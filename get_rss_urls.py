@@ -2,6 +2,7 @@ import mechanize
 from lxml.html import document_fromstring
 from time import time
 from db import Db
+from app_modules.utils import slug
 
 
 DIV_FEED_CLASSES = ["cajaRSSboe", "cajaRSSborme"]
@@ -30,14 +31,18 @@ for feed, title in zip(feeds, titles):
 
     if not section_obj and title.text_content():
         section_obj = db_obj.insert('section',
-                                    {"title": title.text_content(), "timestamp": time()})
+                                    {"title": title.text_content(), "timestamp": time(),
+                                     "slug": slug(title.text_content())
+                                    })
     else:
         section_obj = section_obj[0]
         #TODO update timestamp
 
-    for elem in feed.iterlinks():
-        if not db_obj.has('feed', {"url": elem[2]}):
-            db_obj.insert('feed',
-                          {"title": elem[0].text_content(), "url": elem[2],
-                           "section_id": section_obj['_id']
-                          })
+    if section_obj:
+        for elem in feed.iterlinks():
+            if not db_obj.has('feed', {"url": elem[2]}):
+                db_obj.insert('feed',
+                              {"title": elem[0].text_content(), "url": elem[2],
+                               "section_id": section_obj['_id'],
+                               "slug": slug(elem[0].text_content())
+                              })

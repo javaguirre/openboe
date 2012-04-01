@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, abort, redirect, url_for
+from flask import Flask, render_template, abort
 import os
 app = Flask(__name__)
 
@@ -32,13 +32,19 @@ def index():
     return render_template("index.html", sections=sections, feeds=feeds)
 
 
-@app.route("/<section>/<name>", methods=['GET', 'POST'])
-def feed(name):
-    links = Db().has('link', {"feed_id": feed_id})
-    filter_by = 'nothing'
+@app.route("/<section_slug>/<feed_slug>", methods=['GET', 'POST'])
+def feed(section_slug, feed_slug):
+    feed = Db().find_one('feed', {"slug": feed_slug})
+    sections = Db().get_col('section')
+
+    if not feed:
+        abort(404)
+
+    links = Db().has('link', {"feed_id": feed['_id']})
+    filter_by = ''
 
     return render_template("feeds.html",
-                           links=links, query=filter_by, name=name)
+                           links=links, query=filter_by, feed_slug=feed_slug, sections=sections)
 
 
 if __name__ == "__main__":

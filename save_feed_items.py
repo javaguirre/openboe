@@ -11,7 +11,6 @@ for feed in feeds:
 
     for item in feed_obj['items']:
         if not db_obj.has('link', {"link": item['link']}):
-            print "OK"
             date_item = item['description'].split(" - ")[1].replace("Publicado el", "").strip()
 
             try:
