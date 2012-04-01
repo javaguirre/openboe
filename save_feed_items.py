@@ -4,7 +4,7 @@ from datetime import datetime
 
 URL = 'http://www.boe.es'
 db_obj = Db()
-feeds = db_obj.get_cols('feed')
+feeds = db_obj.get_col('feed')
 
 for feed in feeds:
     feed_obj = feedparser.parse("".join([URL, feed['url']]))

@@ -16,46 +16,27 @@
             <div class="container">
                 <a class="brand" href="{{ url_for('index') }}">Openboe (Alfa)</a>
                 <ul class="nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">Canales Temáticos</a>
-                        <ul class="dropdown-menu">
-                            {% for key in topics.keys() %}
-                                {% if key != 'url' %}
-                                    <li><a href="{{ url_for('feed', name=key) }}">{{ key|capitalize }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">BOE</a>
-                        <ul class="dropdown-menu">
-                            {% for key in boes.keys() %}
-                                {% if key != 'url' %}
-                                    <li><a href="{{ url_for('boe', name=key) }}">{{ key|capitalize }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">BORME</a>
-                        <ul class="dropdown-menu">
-                            {% for key in bormes.keys() %}
-                                {% if key != 'url' %}
-                                    <li><a href="{{ url_for('borme', name=key) }}">{{ key|capitalize }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </li>
+                        {% for section in sections %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle">{{ section['title'] }}</a>
+                                <ul class="dropdown-menu">
+                                    {% for feed in feeds %}
+                                        {% if section['_id'] == feed['section_id'] %}
+                                            <li><a href="">{{ feed['title']|capitalize }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
                 </ul>
-
-                <ul class="nav secondary-nav">
+                {#<ul class="nav secondary-nav">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle">Opciones</a>
                         <ul class="dropdown-menu">
                             <li><label>Próximamente...</label></li>
                         </ul>
                     </li>
-                </ul>
+                </ul> #}
             </div>
         </div>
     </div>

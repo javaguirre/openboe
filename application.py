@@ -10,53 +10,35 @@ from db import Db
 def treat_request(type_feed, request, name):
     filter_by = {}
 
-    if type_feed == "boe":
-        rss_topics = boes
-    elif type_feed == 'borme':
-        rss_topics = bormes
-    else:
-        rss_topics = topics
-
     if request.method == 'POST':
         #TODO check POST['q']
         filter_by = {"q": request.form['q'],
                      "from_date": request.form['from'], "to_date": request.form['to']}
 
-    if name in rss_topics:
-        links = parse(RSS_URL + rss_topics['url'] + rss_topics[name], type_feed, filter_by)
+    if name in "hola":
+        #links = parse(RSS_URL + rss_topics['url'] + rss_topics[name], type_feed, filter_by)
+        pass
     else:
         abort(404)
 
-    return filter_by, links
+    return filter_by, []
 
 
 @app.route("/")
 def index():
-    return render_template("index.html", topics=topics, boes=boes, bormes=bormes)
+    sections = Db().get_col('section')
+    feeds = list(Db().get_col('feed'))
+
+    return render_template("index.html", sections=sections, feeds=feeds)
 
 
-@app.route("/feed/<name>", methods=['GET', 'POST'])
+@app.route("/<section>/<name>", methods=['GET', 'POST'])
 def feed(name):
-    filter_by, links = treat_request('topics', request, name)
+    links = Db().has('link', {"feed_id": feed_id})
+    filter_by = 'nothing'
 
     return render_template("feeds.html",
-                           links=links, query=filter_by, topics=topics, bormes=bormes, boes=boes, name=name)
-
-
-@app.route("/borme/<name>", methods=['GET', 'POST'])
-def borme(name):
-    filter_by, links = treat_request('borme', request, name)
-
-    return render_template("feeds.html",
-                           links=links, query=filter_by, topics=topics, bormes=bormes, boes=boes, name=name)
-
-
-@app.route("/boe/<name>", methods=['GET', 'POST'])
-def boe(name):
-    filter_by, links = treat_request('boe', request, name)
-
-    return render_template("feeds.html",
-                           links=links, query=filter_by, topics=topics, bormes=bormes, boes=boes, name=name)
+                           links=links, query=filter_by, name=name)
 
 
 if __name__ == "__main__":
