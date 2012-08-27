@@ -5,7 +5,13 @@ from datetime import datetime
 import re
 app = Flask(__name__)
 
-from db import Db
+from app_modules.db import Db
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_pyfile("myconf.py")
+    return app
 
 
 @app.route("/")
@@ -55,6 +61,6 @@ def feed(section_slug, feed_slug):
 
 
 if __name__ == "__main__":
-    app.debug = True
-    port = int(os.environ.get('PORT', 45412))
+    app = create_app()
+    port = int(os.environ.get('PORT', app.config['PORT']))
     app.run(host='0.0.0.0', port=port)
