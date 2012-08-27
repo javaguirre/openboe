@@ -18,10 +18,9 @@
         <input type="submit" value="Buscar">
     </form>
     <div id="content">
-        <ul>
         {% if query %}
             {% if query.q %}
-                <p>Resultados para {{ query.q }}
+                <p>Resultados para <strong>{{ query.q }}</strong>
                     {% if query.from_date %}
                         desde {{ query.from_date }} hasta {{ query.to_date }}
                     {% endif %}
@@ -30,11 +29,14 @@
                 <p>Resultados desde {{ query.from_date }} hasta {{ query.to_date }}</p>
             {% endif %}
         {% endif %}
-        {% for link in links %}
-            <li class=>
-                <strong>{{ link['description'] }}</strong>: <a href="{{ link['link'] }}" target="blank">{{ link['title'] }}</a> - <a href="{{ link['guid'] }}">[PDF]</a>
-            </li>
-        {% endfor %}
-        </ul>
+        <div class="bs-docs-grid">
+            {% for link in links %}
+                <div class="row-fluid show-grid">
+                    <div class="span9">
+                        <strong>{{ link['description'] }}</strong>: <a href="{{ link['link'] }}" target="blank">{{ link['title'] }}</a> - <a href="{{ link['guid'] }}">[PDF]</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
