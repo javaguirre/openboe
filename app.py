@@ -3,7 +3,6 @@ from flask import Flask, render_template, abort, request
 import os
 from datetime import datetime
 import re
-app = Flask(__name__)
 
 from app_modules.db import Db
 
@@ -12,6 +11,9 @@ def create_app():
     app = Flask(__name__)
     app.config.from_pyfile("myconf.py")
     return app
+
+
+app = create_app()
 
 
 @app.route("/")
@@ -61,6 +63,5 @@ def feed(section_slug, feed_slug):
 
 
 if __name__ == "__main__":
-    app = create_app()
     port = int(os.environ.get('PORT', app.config['PORT']))
     app.run(host='0.0.0.0', port=port)
