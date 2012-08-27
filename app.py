@@ -49,14 +49,15 @@ def feed(section_slug, feed_slug):
             pass
 
     if 'q' in filter_by:
-        query = {"title": re.compile(filter_by['q'], re.IGNORECASE)}
+        q_regex = re.compile(filter_by['q'], re.IGNORECASE)
+        query = {"$or": [{"title": q_regex}, {"description": q_regex}]}
 
         if "start" and "end" in filter_by:
             query['date'] = {"$gte": filter_by['start'], "$lte": filter_by['to_date']}
 
-        links = Db().has('link', query)
+        links = Db().has('link', query, sort_field="date")
     else:
-        links = Db().has('link', {"feed_id": feed['_id']})
+        links = Db().has('link', {"feed_id": feed['_id']}, sort_field="date")
 
     return render_template("feeds.html",
                            links=links, query=filter_by, feed_slug=feed_slug, sections=sections, feeds=feeds)
