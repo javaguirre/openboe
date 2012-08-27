@@ -1,48 +1,19 @@
+# -*- coding:utf-8 -*-
 import feedparser
 from datetime import datetime
 import mechanize
 from lxml.html import document_fromstring
 from time import time
+import argparse
 
-from utils import slug
-from db import Db
-
-
-def insert_feed_items():
-    '''
-        Retrieves items in feeds saved before in our DB. If
-        items were in the DB before, it ignores them
-    '''
-
-    URL = 'http://www.boe.es'
-    db_obj = Db()
-    feeds = db_obj.get_col('feed')
-
-    for feed in feeds:
-        feed_obj = feedparser.parse("".join([URL, feed['url']]))
-
-        for item in feed_obj['items']:
-            if not db_obj.has('link', {"link": item['link']}):
-                date_item = item['description'].split(" - ")[1].replace("Publicado el", "").strip()
-
-                try:
-                    date_item = datetime.strptime(date_item, "%d/%m/%Y")
-                except ValueError:
-                    date_item = "0000"
-
-                db_obj.insert('link',
-                              {"title": item['title'],
-                               "description": item['description'],
-                               'guid': item['guid'], 'link': item['link'],
-                               "date": date_item,
-                               "feed_id": feed['_id']
-                              })
+from app_modules.utils import slug
+from app_modules.db import Db
 
 
 def get_rss_urls():
     '''
         Retrieves the name and the url from all RSS
-        in the BOE's site and saves them in a mongo collection
+        in BOE's site and saves them in a mongo collection
     '''
 
     DIV_FEED_CLASSES = ["cajaRSSboe", "cajaRSSborme"]
@@ -84,3 +55,70 @@ def get_rss_urls():
                                    "section_id": section_obj['_id'],
                                    "slug": slug(elem[0].text_content())
                                   })
+
+
+def insert_feed_items():
+    '''
+        Retrieves items in feeds saved before in our DB. If
+        items were in the DB before, it ignores them
+    '''
+
+    URL = 'http://www.boe.es'
+    db_obj = Db()
+    feeds = db_obj.get_col('feed')
+
+    if not feeds:
+        return False
+
+    for feed in feeds:
+        feed_obj = feedparser.parse("".join([URL, feed['url']]))
+
+        for item in feed_obj['items']:
+            if not db_obj.has('link', {"link": item['link']}):
+                date_item = item['description'].split(" - ")[1].replace("Publicado el", "").strip()
+
+                try:
+                    date_item = datetime.strptime(date_item, "%d/%m/%Y")
+                except ValueError:
+                    date_item = "0000"
+
+                db_obj.insert('link',
+                              {"title": item['title'],
+                               "description": item['description'],
+                               'guid': item['guid'], 'link': item['link'],
+                               "date": date_item,
+                               "feed_id": feed['_id']
+                              })
+    return True
+
+
+def process_call(arguments):
+    '''
+        Process calls with its arguments from command line
+    '''
+
+    if arguments.sync_titles:
+        get_rss_urls()
+    elif arguments.sync_items:
+        feed_result = insert_feed_items()
+        if not feed_result:
+            get_rss_urls()
+            insert_feed_items()
+
+
+def exec_options():
+    """Parses app command line options """
+
+    parser = argparse.ArgumentParser(description='Opciones de sincronización de OpenBOE')
+
+    parser.add_argument('--sync-titles', action='store_true',
+                        help='Sincroniza los títulos y los feeds del BOE')
+    parser.add_argument('--sync-items', action='store_true',
+                        help="Sincroniza todos los elementos de todos los feeds del BOE")
+
+    arguments = parser.parse_args()
+    process_call(arguments)
+
+
+if __name__ == '__main__':
+    exec_options()
