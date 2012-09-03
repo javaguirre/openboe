@@ -35,7 +35,7 @@ def feed():
 
     filter_by = {}
 
-    if request.method == 'POST':
+    if 'q' in request.form:
         if not re.match("[\s?\w\s?]+", request.form['q']):
             abort(404)
         else:
