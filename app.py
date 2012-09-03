@@ -5,6 +5,7 @@ from datetime import datetime
 import re
 
 from app_modules.db import Db
+from app_modules.utils import make_json_response
 
 
 def create_app():
@@ -24,10 +25,9 @@ def index():
     return render_template("index.html", sections=sections, feeds=feeds)
 
 
-@app.route("/<section_slug>/<feed_slug>", methods=['GET', 'POST'])
-def feed(section_slug, feed_slug):
-    sections = Db().get_col('section')
-    feeds = list(Db().get_col('feed'))
+@app.route("/links/", methods=['GET', 'POST'])
+def feed():
+    feed_slug = request.args.get('feed', '')
     feed = Db().find_one('feed', {"slug": feed_slug})
 
     if not feed:
@@ -59,8 +59,9 @@ def feed(section_slug, feed_slug):
     else:
         links = Db().has('link', {"feed_id": feed['_id']}, sort_field="date")
 
-    return render_template("feeds.html",
-                           links=links, query=filter_by, feed_slug=feed_slug, sections=sections, feeds=feeds)
+    #return render_template("feeds.html",
+                           #links=links, query=filter_by, feed_slug=feed_slug, sections=sections, feeds=feeds)
+    return  make_json_response(links)
 
 
 if __name__ == "__main__":

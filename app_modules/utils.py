@@ -1,4 +1,7 @@
 from unicodedata import normalize
+from flask import make_response
+from bson import json_util
+import json
 
 
 def slug(text, encoding=None,
@@ -14,3 +17,10 @@ def slug(text, encoding=None,
     strict_text = map(lambda x: x if x in permitted_chars else '', ascii_text)
 
     return ''.join(strict_text)
+
+
+def make_json_response(body):
+    resp = make_response(json.dumps(body, default=json_util.default))
+    resp.mimetype = 'application/json'
+
+    return resp
