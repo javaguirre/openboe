@@ -1,11 +1,35 @@
-<div id="todoapp">
-    <div class="title">
-        <h1>Todos</h1>
-    </div>
-
-    <div class="content">
-        <div id="todos">
-            <ul id="todo-list"></ul>
+<div id="openboeapp">
+    <script>
+        /*$(function() {
+            $("input[name='from']").datepicker();
+            $("input[name='to']").datepicker();
+            $("input[type='submit']").click(function() {
+                $(this).attr("value", "Buscando...").attr("disabled", "").parent().submit();
+                            });
+        });*/
+    </script>
+    <form method="post">
+        <p><label>Búsqueda:</label><input type="text" name="q"></p>
+        <p><label>Desde:</label><input type="text" name="from"></p>
+        <p><label>Hasta:</label><input type="text" name="to"></p>
+        <input type="submit" value="Buscar">
+    </form>
+    <h1 class="section-header"></h1>
+    <p>Busca sobre lo que te interesa en el BOE</p>
+    <div id="content">
+        <!--{% if query %}-->
+        <!--{% if query.q %}-->
+        <!--<p>Resultados para <strong>{{ query.q }}</strong>-->
+        <!--{% if query.from_date %}-->
+        <!--desde {{ query.from_date }} hasta {{ query.to_date }}-->
+        <!--{% endif %}-->
+        <!--</p>-->
+        <!--{% elif query.from_date %}-->
+        <!--<p>Resultados desde {{ query.from_date }} hasta {{ query.to_date }}</p>-->
+        <!--{% endif %}-->
+        <!--{% endif %}-->
+        <div class="bs-docs-grid">
+            <div id="link-list"></div>
         </div>
     </div>
 </div>
