@@ -7,24 +7,28 @@
     var LinkList = Backbone.Collection.extend({
 
         model: Link,
+
         url: function() {
-            if(!this.query)
-                return '/links/?feed=' + this.feed;
-            else
-                return '/links/?feed=' + this.feed + "&q=" + this.query;
+            var my_url = '/links/?feed=' + this.feed;
+
+            if(this.query) {
+                my_url += "&q=" + this.query;
+            }
+
+            if(this.params.hasOwnProperty('from')) {
+                my_url += "&from=" + this.params.from + "&to=" + this.params.to;
+            }
+
+            return my_url;
         },
 
         initialize: function(options) {
-            this.feed = options.feed;
-            this.query = options.query;
+            this.setOptions(options);
         },
 
         fetch: function(options) {
             options || (options = {});
-
-            if(options.hasOwnProperty('query')) {
-                this.setQuery(options.query);
-            }
+            this.setOptions(options);
 
             return Backbone.Collection.prototype.fetch.call(this, options);
         },
@@ -35,6 +39,22 @@
 
         setFeed: function(feed) {
             this.feed = feed;
+        },
+
+        setParams: function(params) {
+            this.params = params;
+        },
+
+        setOptions: function(options) {
+            if(options.hasOwnProperty('feed')) {
+                this.setFeed(options.feed);
+            }
+            if(options.hasOwnProperty('query')) {
+                this.setQuery(options.query);
+            }
+            if(options.hasOwnProperty('params')) {
+                this.setParams(options.params);
+            }
         }
     });
 
@@ -85,7 +105,8 @@
                 self.delegateEvents();
 
                 self.links = new LinkList({feed: options.feed,
-                                           query: options.query
+                                           query: options.query,
+                                           params: options.params
                                           });
                 self.links.bind('add',   self.addOne, self);
                 self.links.bind('reset', self.addAll, self);
@@ -126,8 +147,25 @@
 
         performSearch: function(e) {
             query = $('input[name="q"]').val();
-            this.links.fetch({feed: this.feed, query: query});
-            Backbone.history.navigate("!/" + this.section + "/" + this.feed + "/" + query, true);
+            from_date = $('input[name="from"]').val().replace(/\//g, "-");
+            to_date = $('input[name="to"]').val().replace(/\//g, "-");
+
+            var url = "!/" + this.section + "/" + this.feed + "/" + query;
+            var links_options = {
+                                    feed: this.feed,
+                                    query: query,
+                                };
+
+            //FIXME provisional
+            if(from_date && to_date) {
+                url += "?from=" + from_date + "&to=" + to_date;
+                links_options.params = {'from': from_date, 'to': to_date};
+            }
+            else {
+                this.links.fetch(links_options);
+            }
+
+            Backbone.history.navigate(url, {trigger: true});
         }
     });
 
@@ -135,19 +173,38 @@
         routes: {
             "!/": "index",
             "!/:section/:feed": "feed_items",
-            "!/:section/:feed/:query" : "feed_items"
+            "!/:section/:feed/:query?:params" : "feed_items"
         },
 
         index: function() {
             console.log("This is the index!");
         },
 
-        feed_items: function(section, feed, query) {
+        feed_items: function(section, feed, query, params) {
             var myquery = query || "";
-            var view = new LinkApp({feed: feed,
+            var view = new LinkApp({
+                                    feed: feed,
                                     section: section,
                                     query: myquery,
+                                    params: this.extractParams(params)
                                    });
+        },
+
+        extractParams: function(params) {
+            var params_object = {};
+
+            if(!params){
+                return params_object;
+            }
+
+            $.each(params.split('&'), function(index, value){
+                if(value){
+                    var param = value.split('=');
+                    params_object[param[0]] = param[1];
+                }
+            });
+
+            return params_object;
         }
     });
 }());

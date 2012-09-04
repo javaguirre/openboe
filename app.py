@@ -44,8 +44,8 @@ def feed():
             filter_by['q'] = query
         try:
             if from_date and to_date:
-                start = datetime.strptime(from_date, "%m/%d/%Y")
-                end = datetime.strptime(to_date, "%m/%d/%Y")
+                start = datetime.strptime(from_date, "%m-%d-%Y")
+                end = datetime.strptime(to_date, "%m-%d-%Y")
                 filter_by['from_date'] = start
                 filter_by['to_date'] = end
         except ValueError:
