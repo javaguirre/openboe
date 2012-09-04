@@ -8,12 +8,34 @@
 
         model: Link,
         url: function() {
-            return '/links/?feed=' + this.feed;
+            if(!this.query)
+                return '/links/?feed=' + this.feed;
+            else
+                return '/links/?feed=' + this.feed + "&q=" + this.query;
         },
 
         initialize: function(options) {
             this.feed = options.feed;
+            this.query = options.query;
         },
+
+        fetch: function(options) {
+            options || (options = {});
+
+            if(options.hasOwnProperty('query')) {
+                this.setQuery(options.query);
+            }
+
+            return Backbone.Collection.prototype.fetch.call(this, options);
+        },
+
+        setQuery: function(query) {
+            this.query = query;
+        },
+
+        setFeed: function(feed) {
+            this.feed = feed;
+        }
     });
 
     var LinkView = Backbone.View.extend({
@@ -48,6 +70,10 @@
 
     window.LinkApp = Backbone.View.extend({
 
+        events: {
+            "click #search-button": "performSearch"
+        },
+
         initialize: function(options) {
             var self = this,
                 parentElt = options.appendTo || $('.body-container');
@@ -58,19 +84,24 @@
                 self.el = $('#openboeapp');
                 self.delegateEvents();
 
-                self.links = new LinkList({feed: options.feed});
+                self.links = new LinkList({feed: options.feed,
+                                           query: options.query
+                                          });
                 self.links.bind('add',   self.addOne, self);
                 self.links.bind('reset', self.addAll, self);
                 self.links.bind('all',   self.render, self);
 
+                self.section = options.section;
+                self.feed = options.feed;
+
                 self.links.fetch({feed: options.feed});
                 /*self.setFeedHeader(this.feed);*/
+                self.setSearchAction(options.section, options.feed);
             });
         },
 
         render: function() {
             var self = this;
-
             return this;
         },
 
@@ -84,26 +115,39 @@
         },
 
         setFeedHeader: function(feed) {
-            console.log(feed);
             var feed_title = feed.replace(/\-/g, " ");
             feed_title = feed_title.charAt(0).toUpperCase() + feed_title.slice(1);
             this.$('.section-header').text(feed_title);
+        },
+
+        setSearchAction: function(section, feed) {
+            this.$('#search-form').attr('action', "/#!/" + section + "/" + feed);
+        },
+
+        performSearch: function(e) {
+            query = $('input[name="q"]').val();
+            this.links.fetch({feed: this.feed, query: query});
+            Backbone.history.navigate("!/" + this.section + "/" + this.feed + "/" + query, true);
         }
     });
 
     window.MyRouter = Backbone.Router.extend({
         routes: {
             "!/": "index",
-            "!/:section/:feed": "feed_items"
+            "!/:section/:feed": "feed_items",
+            "!/:section/:feed/:query" : "feed_items"
         },
 
         index: function() {
             console.log("This is the index!");
         },
 
-        feed_items: function(section, feed) {
+        feed_items: function(section, feed, query) {
+            var myquery = query || "";
             var view = new LinkApp({feed: feed,
-                                    section: section});
+                                    section: section,
+                                    query: myquery,
+                                   });
         }
     });
 }());

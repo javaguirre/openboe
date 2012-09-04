@@ -29,38 +29,39 @@ def index():
 def feed():
     feed_slug = request.args.get('feed', '')
     feed = Db().find_one('feed', {"slug": feed_slug})
-
     if not feed:
         abort(404)
 
     filter_by = {}
+    query = request.args.get('q', None)
+    from_date = request.args.get('from', None)
+    to_date = request.args.get('to', None)
 
-    if 'q' in request.form:
-        if not re.match("[\s?\w\s?]+", request.form['q']):
+    if query:
+        if not re.match("[\s?\w\s?]+", query):
             abort(404)
         else:
-            filter_by['q'] = request.form['q']
+            filter_by['q'] = query
         try:
-            start = datetime.strptime(request.form['from'], "%m/%d/%Y")
-            end = datetime.strptime(request.form['to'], "%m/%d/%Y")
-            filter_by['from_date'] = start
-            filter_by['to_date'] = end
+            if from_date and to_date:
+                start = datetime.strptime(from_date, "%m/%d/%Y")
+                end = datetime.strptime(to_date, "%m/%d/%Y")
+                filter_by['from_date'] = start
+                filter_by['to_date'] = end
         except ValueError:
             pass
 
     if 'q' in filter_by:
         q_regex = re.compile(filter_by['q'], re.IGNORECASE)
-        query = {"$or": [{"title": q_regex}, {"description": q_regex}]}
+        db_query = {"$or": [{"title": q_regex}, {"description": q_regex}]}
 
         if "start" and "end" in filter_by:
-            query['date'] = {"$gte": filter_by['start'], "$lte": filter_by['to_date']}
+            db_query['date'] = {"$gte": filter_by['start'], "$lte": filter_by['to_date']}
 
-        links = Db().has('link', query, sort_field="date")
+        links = Db().has('link', db_query, sort_field="date")
     else:
         links = Db().has('link', {"feed_id": feed['_id']}, sort_field="date")
 
-    #return render_template("feeds.html",
-                           #links=links, query=filter_by, feed_slug=feed_slug, sections=sections, feeds=feeds)
     return  make_json_response(links)
 
 
