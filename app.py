@@ -29,6 +29,7 @@ def index():
 def feed():
     feed_slug = request.args.get('feed', '')
     feed = Db().find_one('feed', {"slug": feed_slug})
+
     if not feed:
         abort(404)
 
@@ -53,15 +54,15 @@ def feed():
 
     if 'q' in filter_by:
         q_regex = re.compile(filter_by['q'], re.IGNORECASE)
-        db_query = {"$or": [{"title": q_regex}, {"description": q_regex}]}
+        db_query = {"feed_id": feed['_id'],
+                    "$or": [{"title": q_regex}, {"description": q_regex}]}
 
         if "start" and "end" in filter_by:
             db_query['date'] = {"$gte": filter_by['start'], "$lte": filter_by['to_date']}
-
-        links = Db().has('link', db_query, sort_field="date")
     else:
-        links = Db().has('link', {"feed_id": feed['_id']}, sort_field="date")
+        db_query = {"feed_id": feed['_id']}
 
+    links = Db().has('link', db_query, sort_field='date')
     return  make_json_response(links)
 
 

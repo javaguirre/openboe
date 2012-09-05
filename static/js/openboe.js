@@ -26,12 +26,12 @@
             this.setOptions(options);
         },
 
-        fetch: function(options) {
+        /*fetch: function(options) {
             options || (options = {});
             this.setOptions(options);
 
             return Backbone.Collection.prototype.fetch.call(this, options);
-        },
+        },*/
 
         setQuery: function(query) {
             this.query = query;
@@ -115,7 +115,7 @@
                 self.section = options.section;
                 self.feed = options.feed;
 
-                self.links.fetch({feed: options.feed});
+                self.links.fetch();
                 /*self.setFeedHeader(this.feed);*/
                 self.setSearchAction(options.section, options.feed);
             });
@@ -161,9 +161,6 @@
                 url += "?from=" + from_date + "&to=" + to_date;
                 links_options.params = {'from': from_date, 'to': to_date};
             }
-            else {
-                this.links.fetch(links_options);
-            }
 
             Backbone.history.navigate(url, {trigger: true});
         }
@@ -173,6 +170,7 @@
         routes: {
             "!/": "index",
             "!/:section/:feed": "feed_items",
+            "!/:section/:feed/:query": "feed_items",
             "!/:section/:feed/:query?:params" : "feed_items"
         },
 
