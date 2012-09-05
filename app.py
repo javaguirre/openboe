@@ -19,7 +19,7 @@ app = create_app()
 
 @app.route("/")
 def index():
-    sections = Db().get_col('section')
+    sections = list(Db().get_col('section'))
     feeds = list(Db().get_col('feed'))
 
     return render_template("index.html", sections=sections, feeds=feeds)

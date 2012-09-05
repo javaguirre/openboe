@@ -11,37 +11,43 @@
 </head>
 
 <body>
-    <div class="topbar" data-dropdown="dropdown">
-        <div class="topbar-inner">
-            <div class="container">
-                <a class="brand" href="{{ url_for('index') }}">Openboe (Alfa)</a>
-                <ul class="nav">
-                        {% for section in sections %}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle">{{ section['title'] }}</a>
-                                <ul class="dropdown-menu">
-                                    {% for feed in feeds %}
-                                        {% if section['_id'] == feed['section_id'] %}
-                                            <li>
-                                                <a href="#!/{{ section['slug'] }}/{{ feed['slug'] }}">
-                                                    {{ feed['title']|capitalize }}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                        {% endfor %}
-                </ul>
-                {#<ul class="nav secondary-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">Opciones</a>
-                        <ul class="dropdown-menu">
-                            <li><label>Próximamente...</label></li>
-                        </ul>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="{{ url_for('index') }}">Openboe (Alfa)</a>
+            <ul class="nav">
+                {% for section in sections %}
+                    <li class="">
+                        <a href="#{{ section['slug']}}" class="">{{ section['title'] }}</a>
                     </li>
-                </ul> #}
-            </div>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            {% for section in sections %}
+                <li>
+                    <a href="#tab{{ loop.index }}"
+                       data-toggle="tab">
+                        {{section['title']}}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="tab-content">
+            {% for section in sections %}
+                <div class="tab-pane" id="tab{{ loop.index }}">
+                    {% for feed in feeds %}
+                        {% if section['_id'] == feed['section_id'] %}
+                            <li class="">
+                                <a href="#!/{{ section['slug'] }}/{{ feed['slug'] }}">
+                                    {{ feed['title']|capitalize }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
         </div>
     </div>
     <div class="container body-container" style="margin-top: 90px;">
