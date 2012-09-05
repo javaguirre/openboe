@@ -14,7 +14,7 @@
     <div class="navbar">
         <div class="navbar-inner">
             <a class="brand" href="{{ url_for('index') }}">Openboe (Alfa)</a>
-            <ul class="nav">
+            <ul class="nav mainbar">
                 {% for section in sections %}
                     <li class="">
                         <a href="#{{ section['slug']}}" class="">{{ section['title'] }}</a>
@@ -24,19 +24,9 @@
         </div>
     </div>
     <div class="tabbable">
-        <ul class="nav nav-tabs">
-            {% for section in sections %}
-                <li>
-                    <a href="#tab{{ loop.index }}"
-                       data-toggle="tab">
-                        {{section['title']}}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
         <div class="tab-content">
             {% for section in sections %}
-                <div class="tab-pane" id="tab{{ loop.index }}">
+                <div class="tab-pane" id="tab-{{ section['slug'] }}">
                     {% for feed in feeds %}
                         {% if section['_id'] == feed['section_id'] %}
                             <li class="">

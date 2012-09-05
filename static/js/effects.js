@@ -1,8 +1,10 @@
 $(function () {
-    $('.nav-tabs li a').click(function() {
-        var href = $(this).attr('href');
+    $('.mainbar li a').click(function() {
+        var href = "#tab-" + $(this).attr('href').replace("#", "");
 
-        $('.nav-tabs li').removeClass('active');
+        console.log(href);
+
+        $('.mainbar li').removeClass('active');
         $('.tab-pane').removeClass('active');
 
         $(this).parent().addClass('active');
