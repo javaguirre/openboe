@@ -10,4 +10,9 @@ $(function () {
         $(this).parent().addClass('active');
         $(href).addClass('active');
     });
+
+    $('.tab-pane li a').click(function() {
+        $('.breadcrumb li a').text($(this).text());
+        $(this).parent().parent().removeClass('active');
+    });
 });

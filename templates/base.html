@@ -23,24 +23,25 @@
             </ul>
         </div>
     </div>
-    <div class="tabbable">
-        <div class="tab-content">
-            {% for section in sections %}
-                <div class="tab-pane" id="tab-{{ section['slug'] }}">
-                    {% for feed in feeds %}
-                        {% if section['_id'] == feed['section_id'] %}
-                            <li class="">
-                                <a href="#!/{{ section['slug'] }}/{{ feed['slug'] }}">
-                                    {{ feed['title']|capitalize }}
-                                </a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
+    <ul class="breadcrumb">
+        <li class="active"><strong>Tema actual:</strong> <a href=""></a></li>
+    </ul>
+    <div class="tab-content">
+        {% for section in sections %}
+            <div class="tab-pane" id="tab-{{ section['slug'] }}">
+                {% for feed in feeds %}
+                    {% if section['_id'] == feed['section_id'] %}
+                        <li class="">
+                            <a href="#!/{{ section['slug'] }}/{{ feed['slug'] }}">
+                                {{ feed['title']|capitalize }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
     </div>
-    <div class="container body-container" style="margin-top: 90px;">
+    <div class="container body-container">
         {% block content %}
         {% endblock %}
     </div>
